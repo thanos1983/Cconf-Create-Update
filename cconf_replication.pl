@@ -47,7 +47,7 @@ die "\nOption --destinatio_dir or -d not specified.\n\n"
 die "\nOption --host or -h not specified.\n\n"
     if (!defined $$options{'host'} || $$options{'host'} eq '');
 
-($$options{'port'} = 22) 
+($$options{'port'} = 22)
     if (!defined $$options{'port'} || $$options{'port'} eq '');
 
 opendir(my $dir, $$options{'source_dir'})
