@@ -51,13 +51,16 @@ my @files = grep {$_ ne '.' and $_ ne '..'} readdir $dir;
 
 closedir $dir;
 
-print Dumper \@files;
+# print Dumper \@files;
 
-my @output = `ssh -p 19013 tinyos "ls"`;
+my @output = readpipe( "ssh -p ".
+		       $$options{'port'}." ".
+		       $$options{'host'}." ls ". $$options{'dir'}."" );
 chomp @output;
 
 print Dumper \@output;
 
+=outofScope for the moment
 my $ssh2 = Net::SSH2->new();
 
 $ssh2->connect($$options{'host'}, $$options{'port'})
@@ -65,6 +68,7 @@ $ssh2->connect($$options{'host'}, $$options{'port'})
 
 $ssh2->disconnect($$options{'host'})
     or $ssh2->die_with_error;
+=cut
 
 __END__
 
