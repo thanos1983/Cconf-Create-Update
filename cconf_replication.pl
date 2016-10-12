@@ -36,6 +36,7 @@ GetOptions(
 pod2usage(1) if $$options{'help'};
 pod2usage(-exitval => 0, -verbose => 2) if $$options{'man'};
 
+# Input parameters validation conticions
 die "\nOption --source_dir or -s not specified.\n\n"
     if (!defined $$options{'source_dir'}
 	or $$options{'source_dir'} eq '');
@@ -47,17 +48,20 @@ die "\nOption --destinatio_dir or -d not specified.\n\n"
 die "\nOption --host or -h not specified.\n\n"
     if (!defined $$options{'host'} || $$options{'host'} eq '');
 
+# If port is not defined we use default ssh port 22
 ($$options{'port'} = 22)
     if (!defined $$options{'port'} || $$options{'port'} eq '');
 
+# Open local dir for processing
 opendir(my $dir, $$options{'source_dir'})
     or die "\ncouldn't open '".$$options{'source_dir'}."': $!\n\n";
 
+# Not processing single and double dots from local dir
 my @files = grep {$_ ne '.' and $_ ne '..'} readdir $dir;
 
 closedir $dir;
 
-# print Dumper \@files;
+print Dumper \@files;
 
 my @output = readpipe( "ssh -p ".
 		       $$options{'port'}." ".
