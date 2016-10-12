@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-
 use strict;
 use warnings;
 use Net::SSH2;
@@ -61,8 +60,9 @@ my @files = grep {$_ ne '.' and $_ ne '..'} readdir $dir;
 
 closedir $dir;
 
-print Dumper \@files;
+# print Dumper \@files;
 
+=test
 my @output = readpipe( "ssh -p ".
 		       $$options{'port'}." ".
 		       $$options{'host'}." ls ".
@@ -70,16 +70,26 @@ my @output = readpipe( "ssh -p ".
 chomp @output;
 
 print Dumper \@output;
+=cut
 
-=outofScope for the moment
 my $ssh2 = Net::SSH2->new();
 
 $ssh2->connect($$options{'host'}, $$options{'port'})
     or $ssh2->die_with_error;
 
+my $chan2 = $ssh2->channel()
+    or $ssh2->die_with_error;
+
+$chan2->blocking(1);
+
+# This is where we send the command and read the response
+$chan2->exec("uname -a\n");
+print "$_" while <$chan2>;
+
+$chan2->close;
+
 $ssh2->disconnect($$options{'host'})
     or $ssh2->die_with_error;
-=cut
 
 __END__
 
