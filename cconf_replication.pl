@@ -25,27 +25,33 @@ my $options = {
 };
 
 GetOptions(
-    'man|m'         => \$$options{'man'},
-    'help|h'        => \$$options{'help'},
-    'dir|d:s'       => \$$options{'dir'},
-    'host|h:s'      => \$$options{'host'},
-    'port|p:s'      => \$$options{'port'},
+    'man|m'                => \$$options{'man'},
+    'help|h'               => \$$options{'help'},
+    'host|h:s'             => \$$options{'host'},
+    'port|p:s'             => \$$options{'port'},
+    'source_dir|s:s'       => \$$options{'source_dir'},
+    'destinatio_dir|d:s'   => \$$options{'destinatio_dir'},
     ) or pod2usage(2);
 
 pod2usage(1) if $$options{'help'};
 pod2usage(-exitval => 0, -verbose => 2) if $$options{'man'};
 
-die "\nOption --dir or -d not specified.\n\n"
-    if (!defined $$options{'dir'} || $$options{'dir'} eq '');
+die "\nOption --source_dir or -s not specified.\n\n"
+    if (!defined $$options{'source_dir'}
+	or $$options{'source_dir'} eq '');
+
+die "\nOption --destinatio_dir or -d not specified.\n\n"
+    if (!defined $$options{'destinatio_dir'}
+	or $$options{'destinatio_dir'} eq '');
 
 die "\nOption --host or -h not specified.\n\n"
     if (!defined $$options{'host'} || $$options{'host'} eq '');
 
-if (!defined $$options{'port'} || $$options{'port'} eq '')
-    { $$options{'port'} = 22; }
+($$options{'port'} = 22) 
+    if (!defined $$options{'port'} || $$options{'port'} eq '');
 
-opendir(my $dir, $$options{'dir'})
-    or die "\ncouldn't open '".$$options{'dir'}."': $!\n\n";
+opendir(my $dir, $$options{'source_dir'})
+    or die "\ncouldn't open '".$$options{'source_dir'}."': $!\n\n";
 
 my @files = grep {$_ ne '.' and $_ ne '..'} readdir $dir;
 
@@ -55,7 +61,8 @@ closedir $dir;
 
 my @output = readpipe( "ssh -p ".
 		       $$options{'port'}." ".
-		       $$options{'host'}." ls ". $$options{'dir'}."" );
+		       $$options{'host'}." ls ".
+		       $$options{'source_dir'}."" );
 chomp @output;
 
 print Dumper \@output;
